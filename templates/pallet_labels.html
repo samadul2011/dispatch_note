@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pallet Labels - {{ dispatch.OrderNo }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #fff;
+            color: #000;
+        }
+        .label-page {
+            width: 210mm; /* A4 width */
+            height: 297mm; /* A4 height */
+            padding: 10mm;
+            box-sizing: border-box;
+        }
+        .label {
+            width: 190mm;
+            height: 85mm; /* ~297mm / 3 - margin */
+            border: 1px solid #000;
+            padding: 8mm;
+            margin-bottom: 10mm;
+            box-sizing: border-box;
+            page-break-inside: avoid;
+        }
+        .label:last-child {
+            margin-bottom: 0;
+        }
+        .label h3 {
+            margin-top: 0;
+            font-size: 14pt;
+            text-align: center;
+            border-bottom: 1px solid #000;
+            padding-bottom: 4px;
+            margin-bottom: 6px;
+        }
+        .field {
+            margin: 4px 0;
+            font-size: 11pt;
+        }
+        .field-label {
+            font-weight: bold;
+            display: inline-block;
+            width: 100px;
+        }
+        .field-value {
+            display: inline-block;
+            font-weight: normal;
+        }
+        .pallet-no-box {
+            width: 100%;
+            height: 24px;
+            border: 1px dashed #000;
+            margin-top: 4px;
+            text-align: center;
+            line-height: 24px;
+            font-weight: bold;
+            background: none !important;
+        }
+        @media print {
+            body {
+                padding: 0;
+            }
+            .label-page {
+                padding: 5mm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="label-page">
+        {% for label in pallet_labels %}
+        <div class="label">
+            <h3>EXPORT PALLET LABEL</h3>
+            
+            <div class="field">
+                <span class="field-label">Customer:</span>
+                <span class="field-value">{{ label.customer }}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Order No:</span>
+                <span class="field-value">{{ label.order_no }}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Code:</span>
+                <span class="field-value">{{ label.code }}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Description:</span>
+                <span class="field-value">{{ label.description }}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Qty on Pallet:</span>
+                <span class="field-value">{{ label.qty_on_pallet|floatformat:"0" }}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Production:</span>
+                <span class="field-value">{{ label.production_date|date:"d/m/Y"|default:"-" }}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Expiry:</span>
+                {% if label.expiry_date %}
+                    <span class="field-value">{{ label.expiry_date|date:"d/m/Y" }}</span>
+                {% elif label.expairy_date %}
+                    <span class="field-value">{{ label.expairy_date|date:"d/m/Y" }}</span>
+                {% else %}
+                    <span class="field-value">-</span>
+                {% endif %}
+            </div>
+            
+            <div class="field" style="margin-top: 8px;">
+                <span class="field-label">Pallet No:</span>
+                <div class="pallet-no-box"></div>
+            </div>
+            <div class="field">
+            <span class="field-label">Prepared by:</span>
+            <span class="field-value">{{ dispatch.created_by.username|default:"Staff" }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        window.print();
+    </script>
+</body>
+</html>

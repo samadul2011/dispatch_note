@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% if object %}Edit{% else %}Create{% endif %} Dispatch</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .formset-row { 
+            border-bottom: 1px solid #eee; 
+            padding: 15px 0; 
+            margin: 10px 0; 
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        .delete-row { 
+            color: red; 
+            cursor: pointer; 
+            font-weight: bold;
+        }
+        .auto-filled { 
+            background-color: #f0f8ff !important; 
+        }
+        .calculated-field {
+            background-color: #e8f5e8 !important;
+            font-weight: bold;
+        }
+        .message-alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            min-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Success/Error Messages -->
+    {% if messages %}
+    <div class="message-alert">
+        {% for message in messages %}
+        <div class="alert alert-dismissible {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %} show" role="alert">
+            <div class="d-flex">
+                <div class="flex-grow-1">
+                    {% if message.tags == 'success' %}
+                        <i class="fas fa-check-circle me-2"></i>
+                    {% elif message.tags == 'error' %}
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                    {% endif %}
+                    {{ message }}
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>{% if object %}Edit{% else %}Create{% endif %} Dispatch Note</h2>
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-home me-1"></i> Back to Home
+            </a>
+        </div>
+
+        <form method="post" id="dispatch-form">
+            {% csrf_token %}
+            
+            <!-- Main Dispatch Form -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Dispatch Information</h5>
+                    <a href="{% url 'customer_create' %}" target="_blank" class="btn btn-warning btn-sm">
+                        <i class="fas fa-plus me-1"></i> New Customer
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Order No *</label>
+                                {{ form.OrderNo }}
+                                {% if form.OrderNo.errors %}
+                                <div class="text-danger small">{{ form.OrderNo.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Customer *</label>
+                                {{ form.Customer }}
+                                {% if form.Customer.errors %}
+                                <div class="text-danger small">{{ form.Customer.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Order Date *</label>
+                                {{ form.OrderDate }}
+                                {% if form.OrderDate.errors %}
+                                <div class="text-danger small">{{ form.OrderDate.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Loading Date</label>
+                                {{ form.LoadingDate }}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Invoice No</label>
+                                {{ form.InvoiceNo }}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                {{ form.Status }}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Delivery Date</label>
+                                {{ form.DeliveryDate }}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Transport No</label>
+                                {{ form.TransportNo }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label class="form-label">Address</label>
+                                {{ form.Address }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Driver Name</label>
+                                {{ form.DriverName }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Driver Mobile</label>
+                                {{ form.DriverMobile }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Contact Person</label>
+                                {{ form.ContactPerson }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Contact No</label>
+                                {{ form.ContactNo }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Country</label>
+                                {{ form.Country }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Seal</label>
+                                {{ form.Seal }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Bulk Date Setup -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">📅 Quick Date Setup (Apply to All Items)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <!-- Production Date -->
+                        <div class="col-md-4">
+                            <label class="form-label">Production Date</label>
+                            <input type="date" id="bulk-production-date" class="form-control">
+                        </div>
+                        
+                        <!-- Expiry Date -->
+                        <div class="col-md-4">
+                            <label class="form-label">Expiry Date</label>
+                            <input type="date" id="bulk-expiry-date" class="form-control">
+                        </div>
+                        
+                        <!-- Apply Button -->
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="button" id="apply-dates" class="btn btn-success w-100">
+                                ✅ Apply to All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Dispatch Details Formset -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Dispatch Items</h5>
+                    <div>
+                        <a href="{% url 'product_create' %}" target="_blank" class="btn btn-warning btn-sm me-2">
+                            <i class="fas fa-plus me-1"></i> New Product
+                        </a>
+                        <button type="button" class="btn btn-light btn-sm" id="add-more">
+                            <i class="fas fa-plus me-1"></i> Add Item
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {{ formset.management_form }}
+                    <div id="formset-container">
+                        {% for form in formset %}
+                        <div class="formset-row" id="form-{{ forloop.counter0 }}">
+                            <div class="row align-items-end">
+                                <div class="col-md-2">
+                                    <label class="form-label">Product Code *</label>
+                                    {{ form.Code }}
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Local Code</label>
+                                    {{ form.LocalCode }}
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Description</label>
+                                    {{ form.Description }}
+                                </div>
+                                <div class="col-md-1">
+                                    <label class="form-label">UOM</label>
+                                    {{ form.UOM }}
+                                </div>
+                                <div class="col-md-1">
+                                    <label class="form-label">Qty *</label>
+                                    {{ form.Qty }}
+                                    {% if form.Qty.errors %}
+                                    <div class="text-danger small">{{ form.Qty.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-1">
+                                    <label class="form-label">Pack/Carton</label>
+                                    {{ form.PackInCarton }}
+                                </div>
+                                <div class="col-md-1">
+                                    <label class="form-label">Par/Pallet</label>
+                                    {{ form.ParPallet }}
+                                </div>
+                                <div class="col-md-1">
+                                    <label class="form-label">Pallet</label>
+                                    <input type="text" class="form-control pallet-calculated calculated-field" readonly placeholder="Auto-calculated">
+                                </div>
+                                <!-- Inside the .formset-row .row -->
+                                <div class="col-md-2">
+                                    <label class="form-label">Production Date</label>
+                                    {{ form.ProductionDate }}
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Expiry Date</label>
+                                    {{ form.ExpairyDate }}
+                                </div>
+                                <div class="col-md-1">
+                                    <label class="form-label">Delete</label>
+                                    <div>
+                                        {% if form.instance.pk %}
+                                            {{ form.DELETE }}
+                                        {% endif %}
+                                        <button type="button" class="btn btn-danger btn-sm delete-row" title="Remove item">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-1" style="display: none;">
+                                    {{ form.ID }}
+                                </div>
+                            </div>
+                            {% if form.non_field_errors %}
+                            <div class="text-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-save me-2"></i>
+                                {% if object %}Update Dispatch{% else %}Create Dispatch{% endif %}
+                            </button>
+                            <a href="{% url 'home' %}" class="btn btn-secondary btn-lg ms-2">
+                                <i class="fas fa-home me-2"></i> Back to Home
+                            </a>
+                        </div>
+                        <div class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Fields marked with * are required
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            console.log("Document ready - initializing auto-fill");
+            
+            // Auto-hide messages after 5 seconds
+            setTimeout(function() {
+                $('.alert').alert('close');
+            }, 5000);
+            
+            // Customer auto-fill
+            $('#id_Customer').change(function() {
+                var customerId = $(this).val();
+                console.log("Customer changed:", customerId);
+                if (customerId) {
+                    $.get('/ajax/customer/' + customerId + '/', function(data) {
+                        console.log("Customer data received:", data);
+                        if (!data.error) {
+                            $('#id_Address').val(data.Address || '');
+                            $('#id_Country').val(data.Country || '');
+                            $('#id_ContactNo').val(data.ContactNo || '');
+                            $('#id_ContactPerson').val(data.ContactPerson || '');
+                        }
+                    }).fail(function(xhr, status, error) {
+                        console.log('Error loading customer details:', error);
+                    });
+                } else {
+                    // Clear fields if no customer selected
+                    $('#id_Address').val('');
+                    $('#id_Country').val('');
+                    $('#id_ContactNo').val('');
+                    $('#id_ContactPerson').val('');
+                }
+            });
+
+            // Calculate Pallet = Qty / ParPallet
+            function calculatePallet(row) {
+                var qtyInput = row.find('input[name*="Qty"]');
+                var parPalletInput = row.find('input[name*="ParPallet"]');
+                var palletField = row.find('.pallet-calculated');
+                
+                var qty = parseFloat(qtyInput.val()) || 0;
+                var parPallet = parseFloat(parPalletInput.val()) || 0;
+                
+                console.log("Calculating pallet: Qty=" + qty + ", ParPallet=" + parPallet);
+                
+                if (parPallet > 0) {
+                    var pallets = qty / parPallet;
+                    palletField.val(pallets.toFixed(2));
+                    console.log("Pallet calculated: " + pallets.toFixed(2));
+                } else {
+                    palletField.val('-');
+                    console.log("Pallet calculation: No ParPallet value");
+                }
+            }
+
+            // Update pallet calculation when Qty or ParPallet changes
+            $(document).on('input', 'input[name*="Qty"], input[name*="ParPallet"]', function() {
+                var row = $(this).closest('.formset-row');
+                calculatePallet(row);
+            });
+//date copy 
+                document.addEventListener('DOMContentLoaded', function() {
+                    const applyBtn = document.getElementById('apply-dates');
+                    const prodInput = document.getElementById('bulk-production-date');
+                    const expiryInput = document.getElementById('bulk-expiry-date');
+                    const autoExpiry = document.getElementById('auto-expiry');
+
+                    // Auto-calculate expiry when production date changes
+                    prodInput.addEventListener('change', function() {
+                        if (autoExpiry.checked && this.value) {
+                            const prodDate = new Date(this.value);
+                            prodDate.setMonth(prodDate.getMonth() + 6);
+                            // Format as YYYY-MM-DD
+                            const year = prodDate.getFullYear();
+                            const month = String(prodDate.getMonth() + 1).padStart(2, '0');
+                            const day = String(prodDate.getDate()).padStart(2, '0');
+                            expiryInput.value = `${year}-${month}-${day}`;
+                        }
+                    });
+
+                    // Apply dates to all formset rows
+                    applyBtn.addEventListener('click', function() {
+                        const prodDate = prodInput.value;
+                        const expiryDate = expiryInput.value;
+
+                        if (!prodDate && !expiryDate) {
+                            alert('Please select at least one date.');
+                            return;
+                        }
+
+                        // Loop through all formset rows
+                        document.querySelectorAll('.formset-row').forEach(row => {
+                            if (prodDate) {
+                                const prodField = row.querySelector('input[name*="ProductionDate"]');
+                                if (prodField) prodField.value = prodDate;
+                            }
+                            if (expiryDate) {
+                                const expiryField = row.querySelector('input[name*="ExpairyDate"]');
+                                if (expiryField) expiryField.value = expiryDate;
+                            }
+                        });
+
+                        // Optional: Show success message
+                        const msg = document.createElement('div');
+                        msg.className = 'alert alert-success alert-dismissible fade show mt-2';
+                        msg.innerHTML = 'Dates applied to all items! <button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+                        applyBtn.closest('.card').after(msg);
+                        setTimeout(() => msg.remove(), 3000);
+                    });
+                });
+
+            // Product auto-fill function
+            function setupProductAutoFill(selectElement) {
+                $(selectElement).change(function() {
+                    var productCode = $(this).val();
+                    var row = $(this).closest('.formset-row');
+                    console.log("Product changed:", productCode, "in row:", row.attr('id'));
+                    
+                    if (productCode) {
+                        $.get('/ajax/product/' + productCode + '/', function(data) {
+                            console.log("Product data received:", data);
+                            if (!data.error) {
+                                // Update the fields in the same row
+                                row.find('input[name*="LocalCode"]').val(data.LocalCode || '');
+                                row.find('textarea[name*="Description"]').val(data.Description || '');
+                                row.find('input[name*="UOM"]').val(data.UOM || '');
+                                row.find('input[name*="PackInCarton"]').val(data.PackInCarton || '');
+                                row.find('input[name*="ParPallet"]').val(data.ParPallet || '');
+                                
+                                // Add visual feedback
+                                row.find('input[name*="LocalCode"], textarea[name*="Description"], input[name*="UOM"], input[name*="PackInCarton"], input[name*="ParPallet"]')
+                                   .addClass('auto-filled');
+                                
+                                // Recalculate pallet after product data is loaded
+                                calculatePallet(row);
+                            }
+                        }).fail(function(xhr, status, error) {
+                            console.log('Error loading product details:', error);
+                            alert('Error loading product details: ' + error);
+                        });
+                    } else {
+                        // Clear fields if no product selected
+                        row.find('input[name*="LocalCode"]').val('');
+                        row.find('textarea[name*="Description"]').val('');
+                        row.find('input[name*="UOM"]').val('');
+                        row.find('input[name*="PackInCarton"]').val('');
+                        row.find('input[name*="ParPallet"]').val('');
+                        
+                        // Remove visual feedback
+                        row.find('input[name*="LocalCode"], textarea[name*="Description"], input[name*="UOM"], input[name*="PackInCarton"], input[name*="ParPallet"]')
+                           .removeClass('auto-filled');
+                        
+                        // Recalculate pallet (will show '-')
+                        calculatePallet(row);
+                    }
+                });
+            }
+
+            // Initialize product auto-fill for existing rows
+            $('select[name*="Code"]').each(function() {
+                setupProductAutoFill(this);
+                // Also calculate initial pallet values for existing rows
+                calculatePallet($(this).closest('.formset-row'));
+            });
+
+            // Add more formset rows
+            $('#add-more').click(function() {
+                var totalForms = $('#id_details-TOTAL_FORMS');
+                var formCount = parseInt(totalForms.val());
+                console.log("Current form count:", formCount);
+                
+                // Clone the first formset row
+                var newRow = $('.formset-row:first').clone();
+                console.log("Cloned row:", newRow);
+                
+                // Clear all input values in the new row
+                newRow.find('input, select, textarea').val('');
+                newRow.find('.pallet-calculated').val('');
+                
+                // Update all the names and IDs
+                newRow.find('[name]').each(function() {
+                    var oldName = $(this).attr('name');
+                    if (oldName) {
+                        var newName = oldName.replace(/-\d+-/, '-' + formCount + '-');
+                        $(this).attr('name', newName);
+                        
+                        var oldId = $(this).attr('id');
+                        if (oldId) {
+                            var newId = oldId.replace(/-\d+-/, '-' + formCount + '-');
+                            $(this).attr('id', newId);
+                        }
+                    }
+                });
+                
+                // Remove any existing DELETE checkbox (for new rows)
+                newRow.find('input[type="checkbox"][name*="DELETE"]').remove();
+                
+                // Update the row ID
+                newRow.attr('id', 'form-' + formCount);
+                
+                // Append to container
+                $('#formset-container').append(newRow);
+                
+                // Update the total forms count
+                totalForms.val(formCount + 1);
+                
+                // Setup auto-fill for the new product select
+                var newSelect = newRow.find('select[name*="Code"]');
+                if (newSelect.length) {
+                    setupProductAutoFill(newSelect[0]);
+                }
+                
+                console.log("Added new row, total forms:", totalForms.val());
+            });
+            
+            // Delete row
+            $(document).on('click', '.delete-row', function() {
+                var row = $(this).closest('.formset-row');
+                var deleteCheckbox = row.find('input[type="checkbox"][name*="DELETE"]');
+                
+                if (deleteCheckbox.length > 0) {
+                    // Existing row - mark for deletion and hide
+                    deleteCheckbox.prop('checked', true);
+                    row.hide();
+                    console.log("Marked existing row for deletion");
+                } else {
+                    // New row - remove completely
+                    row.remove();
+                    // Update total forms count
+                    var totalForms = $('#id_details-TOTAL_FORMS');
+                    totalForms.val(parseInt(totalForms.val()) - 1);
+                    console.log("Removed new row, total forms:", totalForms.val());
+                    
+                    // Re-index remaining forms
+                    $('.formset-row').each(function(index) {
+                        var currentRow = $(this);
+                        currentRow.find('[name]').each(function() {
+                            var oldName = $(this).attr('name');
+                            if (oldName) {
+                                var newName = oldName.replace(/-\d+-/, '-' + index + '-');
+                                $(this).attr('name', newName);
+                                
+                                var oldId = $(this).attr('id');
+                                if (oldId) {
+                                    var newId = oldId.replace(/-\d+-/, '-' + index + '-');
+                                    $(this).attr('id', newId);
+                                }
+                            }
+                        });
+                        currentRow.attr('id', 'form-' + index);
+                    });
+                }
+            });
+
+            // Debug: log all product select elements
+            console.log("Product select elements found:", $('select[name*="Code"]').length);
+            
+            // Handle form submission - clean up empty rows
+            $('#dispatch-form').on('submit', function(e) {
+                console.log("Form submitted - cleaning up empty rows");
+                
+                // Iterate through all formset rows
+                $('.formset-row').each(function(index) {
+                    var row = $(this);
+                    var codeSelect = row.find('select[name*="Code"]');
+                    var qtyInput = row.find('input[name*="Qty"]');
+                    var deleteCheckbox = row.find('input[type="checkbox"][name*="DELETE"]');
+                    
+                    var code = codeSelect.val() || '';
+                    var qty = qtyInput.val() || '';
+                    
+                    // If both Code and Qty are empty, mark for deletion (if existing row)
+                    if (!code.trim() && !qty.trim()) {
+                        if (deleteCheckbox.length > 0) {
+                            // Existing row - check if it has an instance (pk)
+                            var instanceInput = row.find('input[name*="-id"], input[name*="-ID"]');
+                            if (instanceInput.length > 0 && instanceInput.val()) {
+                                // Has existing ID - mark for deletion
+                                deleteCheckbox.prop('checked', true);
+                                console.log("Row " + index + " marked for deletion (empty but has ID)");
+                            }
+                        } else {
+                            // New row - remove from formset count won't help at this point,
+                            // but the backend validation should handle it
+                            console.log("Row " + index + " is empty new row");
+                        }
+                    }
+                });
+                
+                console.log("Ready to submit form");
+            });
+        });
+    </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const prodInput = document.getElementById('bulk-production-date');
+    const expiryInput = document.getElementById('bulk-expiry-date');
+    const autoExpiry = document.getElementById('auto-expiry');
+    const applyBtn = document.getElementById('apply-dates');
+
+    // Auto-calculate expiry when production date changes
+    prodInput.addEventListener('change', function() {
+        if (autoExpiry.checked && this.value) {
+            const prodDate = new Date(this.value);
+            prodDate.setMonth(prodDate.getMonth() + 6);
+            const year = prodDate.getFullYear();
+            const month = String(prodDate.getMonth() + 1).padStart(2, '0');
+            const day = String(prodDate.getDate()).padStart(2, '0');
+            expiryInput.value = `${year}-${month}-${day}`;
+        }
+    });
+
+    // Apply dates to all formset rows
+    applyBtn.addEventListener('click', function() {
+        const prodDate = prodInput.value;
+        const expiryDate = expiryInput.value;
+
+        if (!prodDate && !expiryDate) {
+            alert('Please select at least one date.');
+            return;
+        }
+
+        let appliedCount = 0;
+        document.querySelectorAll('.formset-row').forEach(row => {
+            // Skip deleted rows
+            const deleteCheckbox = row.querySelector('input[name*="DELETE"]');
+            if (deleteCheckbox && deleteCheckbox.checked) return;
+
+            if (prodDate) {
+                const prodField = row.querySelector('input[name*="ProductionDate"]');
+                if (prodField) {
+                    prodField.value = prodDate;
+                    appliedCount++;
+                }
+            }
+            if (expiryDate) {
+                const expiryField = row.querySelector('input[name*="ExpairyDate"]');
+                if (expiryField) {
+                    expiryField.value = expiryDate;
+                    appliedCount++;
+                }
+            }
+        });
+
+        // Show success feedback
+        if (appliedCount > 0) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success alert-dismissible fade show mt-3';
+            alert.innerHTML = `
+                <strong>Success!</strong> Dates applied to ${Math.ceil(appliedCount / 2)} item(s).
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.querySelector('.card-body').appendChild(alert);
+            setTimeout(() => alert.remove(), 3000);
+        }
+    });
+
+    // Set today as default production date
+    const today = new Date().toISOString().split('T')[0];
+    prodInput.value = today;
+    
+    // Set default expiry (today + 6 months)
+    if (autoExpiry.checked) {
+        const defaultExpiry = new Date();
+        defaultExpiry.setMonth(defaultExpiry.getMonth() + 6);
+        const y = defaultExpiry.getFullYear();
+        const m = String(defaultExpiry.getMonth() + 1).padStart(2, '0');
+        const d = String(defaultExpiry.getDate()).padStart(2, '0');
+        expiryInput.value = `${y}-${m}-${d}`;
+    }
+});
+</script>
+</body>
+</html>
