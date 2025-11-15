@@ -62,6 +62,8 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+# settings.py
+CSRF_TRUSTED_ORIGINS = ['https://localhost:8000', 'https://127.0.0.1:8000']
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
